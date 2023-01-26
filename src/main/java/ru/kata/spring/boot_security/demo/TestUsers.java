@@ -31,8 +31,8 @@ public class TestUsers implements CommandLineRunner {
         adminRoles.add(roleAdmin);
         userRoles.add(roleUser);
 
-        User userAdmin = new User("A","$2y$10$08fime4hWZ5TMO.JkPEmXuIwyBchRDIbR/5QqtOnDtXE1s1LV52De", "A", 10,  adminRoles);
-        User userUser = new User("B", "$2y$10$GuP0CFLp71MpXFxHluKAy.t391.yfdkrTdSp6XRjvv2tnzGsTeH8O", "B", 10, userRoles);
+        User userAdmin = new User("A","$2y$10$08fime4hWZ5TMO.JkPEmXuIwyBchRDIbR/5QqtOnDtXE1s1LV52De", "A", 10, "a@gmil.com",  adminRoles);
+        User userUser = new User("B", "$2y$10$GuP0CFLp71MpXFxHluKAy.t391.yfdkrTdSp6XRjvv2tnzGsTeH8O", "B", 10, "b@gmil.com", userRoles);
         System.out.println(userAdmin);
         userRepository.save(userAdmin);
         System.out.println(userUser);

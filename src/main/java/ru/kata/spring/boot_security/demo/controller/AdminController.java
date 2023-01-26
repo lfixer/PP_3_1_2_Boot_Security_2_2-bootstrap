@@ -1,17 +1,13 @@
 package ru.kata.spring.boot_security.demo.controller;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
-
-import java.util.List;
-
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/admin")
@@ -25,48 +21,38 @@ public class AdminController {
         this.roleService = roleService;
     }
 
+
     @GetMapping
-    public String getAllUsers(ModelMap model) {
+    public String showAllUsers(Principal principal, Model model, @AuthenticationPrincipal User user) {
         model.addAttribute("users", userService.getAllUsers());
-        return "admin-page";
+        model.addAttribute("admin", userService.findUserByUsername(principal.getName()));
+        return "admin";
     }
 
-    @GetMapping("/add-user")
-    public String addNewUser(Model model, @ModelAttribute("user") User user) {
-        List<Role> roles = roleService.getUniqAllRoles();
-        model.addAttribute("rolesAdd", roles);
-        return "new-user";
+
+    @GetMapping("/add")
+    public String addUserForm(Model model, User user, Principal principal) {
+        model.addAttribute("user", new User());
+        model.addAttribute("roles", roleService.getUniqAllRoles());
+        model.addAttribute("admin", userService.findUserByUsername(principal.getName()));
+        return "add";
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public String addCreateNewUser(@ModelAttribute("user") User user) {
         userService.createNewUser(user);
         return "redirect:/admin";
     }
 
-    @GetMapping(value = "/{id}/delete-user")
-    public String deleteUserQuestion(ModelMap model, @PathVariable("id") Long id) {
-        model.addAttribute("user", userService.getUser(id));
-        return "delete-user";
-    }
-
-    @DeleteMapping(value = "/{id}")
-    public String deleteUser(@ModelAttribute("user") User user) {
-        userService.deleteUser(user.getId());
-        return "redirect:/admin/";
-    }
-
-    @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("user", userService.getUser(id));
-        List<Role> roles = roleService.getUniqAllRoles();
-        model.addAttribute("rolesAdd", roles);
-        return "edit";
-    }
-
     @PatchMapping("/{id}")
     public String updateUser(@ModelAttribute("user") User user) {
         userService.updateUser(user);
+        return "redirect:/admin";
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable("id") Long id) {
+        userService.deleteUser(id);
         return "redirect:/admin";
     }
 
